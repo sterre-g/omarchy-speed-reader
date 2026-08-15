@@ -36,7 +36,8 @@ popup pinned to the bar.
 From a keybinding:
 
 ```sh
-omarchy-shell sterre.speed-reader read      # open and start on the clipboard
+omarchy-shell sterre.speed-reader readnow   # open, load the clipboard and start
+omarchy-shell sterre.speed-reader read      # open and load, without starting
 omarchy-shell sterre.speed-reader play
 omarchy-shell sterre.speed-reader pause
 omarchy-shell sterre.speed-reader speed 600
@@ -46,7 +47,7 @@ omarchy-shell sterre.speed-reader status
 A good `~/.config/hypr/bindings.lua` entry:
 
 ```lua
-o.bind("SUPER + SHIFT + R", "Speed read clipboard", "omarchy-shell sterre.speed-reader read")
+o.bind("SUPER + SHIFT + R", "Speed read clipboard", "omarchy-shell sterre.speed-reader readnow")
 ```
 
 ## Settings

@@ -45,6 +45,8 @@ Panel {
   implicitWidth: button.implicitWidth
   implicitHeight: button.implicitHeight
 
+  property bool playWhenLoaded: false
+
   function loadText(raw) {
     var next = Model.tokenize(raw)
     root.words = next
@@ -53,6 +55,13 @@ Panel {
     root.sourceNote = next.length > 0
       ? "clipboard, " + Model.formatDuration(Model.totalSeconds(next, root.wpm)) + " at " + root.wpm + " wpm"
       : "clipboard was empty"
+
+    // The clipboard arrives asynchronously, so "start reading now" has to wait
+    // for the text rather than pressing play against an empty word list.
+    if (root.playWhenLoaded) {
+      root.playWhenLoaded = false
+      root.play()
+    }
   }
 
   function loadClipboard() {
@@ -127,9 +136,18 @@ Panel {
     function close(): void { root.close() }
     function toggle(): void { root.toggle() }
     function read(): string {
+      root.playWhenLoaded = false
       root.open()
       root.loadClipboard()
       return "reading clipboard"
+    }
+    // One keybinding, from nothing to reading: open, take whatever is on the
+    // clipboard, and start.
+    function readnow(): string {
+      root.playWhenLoaded = true
+      root.open()
+      root.loadClipboard()
+      return "reading clipboard now"
     }
     function play(): string {
       root.play()
