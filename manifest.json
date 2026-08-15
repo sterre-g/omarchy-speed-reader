@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "sterre.speed-reader",
+  "name": "Speed reader",
+  "version": "0.1.0",
+  "author": "sterre-g",
+  "license": "MIT",
+  "description": "Reads the clipboard one word at a time, pinned at the optimal recognition point, at a speed you choose.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Speed reader",
+    "description": "RSVP reader for whatever is on the clipboard",
+    "category": "Tools",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "wpm": 400,
+      "autoLoad": true
+    },
+    "schema": [
+      {
+        "key": "wpm",
+        "type": "integer",
+        "label": "Words per minute",
+        "min": 60,
+        "max": 1500,
+        "step": 25,
+        "defaultValue": 400
+      },
+      {
+        "key": "autoLoad",
+        "type": "boolean",
+        "label": "Load the clipboard when the panel opens",
+        "defaultValue": true
+      }
+    ]
+  }
+}
