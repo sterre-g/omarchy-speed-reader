@@ -8,3 +8,6 @@
 - Only the widget on the focused monitor registers the IPC handler, which is
   how the reader opens on the screen you are looking at without needing a
   singleton service.
+- `feat/centre-on-screen`: the reader is a centred overlay on its own monitor
+  instead of a popup anchored to the bar, and the word is sized for the space
+  it now has. RSVP only works if the word lands where the eyes already are.

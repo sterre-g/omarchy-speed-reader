@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
+import Quickshell.Wayland
 import qs.Commons
 import qs.Ui
 import "Model.js" as Model
@@ -34,6 +35,9 @@ Panel {
     ? Hyprland.focusedMonitor.name === root.screenName
     : false
 
+  // The reader owns the middle of the screen now, so the word is sized for
+  // reading across the room rather than for a bar popup.
+  readonly property int wordSize: Math.round(Style.font.displayLarge * 2.4)
   readonly property color foreground: bar ? bar.foreground : Color.foreground
   readonly property color dim: Qt.darker(foreground, 1.55)
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
@@ -159,19 +163,39 @@ Panel {
     }
   }
 
-  KeyboardPanel {
-    id: panel
-    anchorItem: button
-    owner: root
-    bar: root.bar
-    open: root.opened
-    focusTarget: keyCatcher
-    contentWidth: panel.fittedContentWidth(Style.space(420))
-    contentHeight: panel.fittedContentHeight(column.implicitHeight, Style.space(420))
+  // Reading happens in the middle of the screen rather than in a popup pinned
+  // to the bar: the whole point of RSVP is that your eyes do not travel, so the
+  // word has to sit where you are already looking.
+  PanelWindow {
+    id: readerWindow
+    screen: root.QsWindow.window ? root.QsWindow.window.screen : null
+    visible: root.opened
+    color: "transparent"
+    WlrLayershell.namespace: "sterre-speed-reader"
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+    exclusionMode: ExclusionMode.Ignore
+    anchors {
+      top: true
+      bottom: true
+      left: true
+      right: true
+    }
+
+    Rectangle {
+      anchors.fill: parent
+      color: Color.menu.scrim
+    }
+
+    MouseArea {
+      anchors.fill: parent
+      onClicked: root.close()
+    }
 
     PanelKeyCatcher {
       id: keyCatcher
       anchors.fill: parent
+      focus: root.opened
       onMoveRequested: function (dx, dy) {
         if (dy < 0) root.setWpm(root.wpm + 25)
         else if (dy > 0) root.setWpm(root.wpm - 25)
@@ -186,9 +210,20 @@ Panel {
         else if (t === "0") root.index = 0
       }
 
+      Rectangle {
+        id: card
+        anchors.centerIn: parent
+        width: Math.min(Style.space(760), readerWindow.width - Style.space(80))
+        implicitHeight: column.implicitHeight + Style.spacing.panelPadding * 2
+        radius: Style.cornerRadius
+        color: Color.menu.background
+        border.width: Math.max(1, Style.space(2))
+        border.color: Color.menu.border
+
       Column {
         id: column
-        width: parent.width
+        anchors.centerIn: parent
+        width: card.width - Style.spacing.panelPadding * 2
         spacing: Style.space(10)
 
         PanelSectionHeader {
@@ -201,7 +236,7 @@ Panel {
         Item {
           id: display
           width: parent.width
-          height: Style.space(72)
+          height: Math.round(root.wordSize * 2.2)
 
           readonly property string word: root.currentWord
           readonly property int orp: Model.orpIndex(display.word)
@@ -213,7 +248,7 @@ Panel {
           Rectangle {
             x: display.pivot
             width: 1
-            height: Style.space(8)
+            height: Math.round(root.wordSize * 0.35)
             color: root.dim
             anchors.top: parent.top
           }
@@ -221,7 +256,7 @@ Panel {
           Rectangle {
             x: display.pivot
             width: 1
-            height: Style.space(8)
+            height: Math.round(root.wordSize * 0.35)
             color: root.dim
             anchors.bottom: parent.bottom
           }
@@ -232,7 +267,7 @@ Panel {
             anchors.verticalCenter: parent.verticalCenter
             text: display.mid
             font.family: root.fontFamily
-            font.pixelSize: Style.font.displayLarge
+            font.pixelSize: root.wordSize
             color: Color.accent
           }
 
@@ -241,7 +276,7 @@ Panel {
             anchors.baseline: midText.baseline
             text: display.pre
             font.family: root.fontFamily
-            font.pixelSize: Style.font.displayLarge
+            font.pixelSize: root.wordSize
             color: root.foreground
           }
 
@@ -250,7 +285,7 @@ Panel {
             anchors.baseline: midText.baseline
             text: display.post
             font.family: root.fontFamily
-            font.pixelSize: Style.font.displayLarge
+            font.pixelSize: root.wordSize
             color: root.foreground
           }
         }
@@ -383,6 +418,7 @@ Panel {
           color: root.dim
           wrapMode: Text.WordWrap
         }
+      }
       }
     }
   }
