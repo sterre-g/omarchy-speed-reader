@@ -19,10 +19,15 @@ omarchy plugin enable sterre.speed-reader --section right
 
 ## Using it
 
-Copy some text, then click the bar button. The clipboard loads automatically
-when the panel opens.
+Copy some text, then click the bar button. The reader opens in the middle of
+the screen, over a dimmed background, and the clipboard loads automatically.
 
-- Left click opens the panel, right click reloads the clipboard without opening.
+That position is the point: the whole idea of RSVP is that your eyes stop
+travelling, so the word sits where you are already looking rather than in a
+popup pinned to the bar.
+
+- Left click opens the reader, right click reloads the clipboard without opening.
+- Clicking the dimmed background or pressing `Esc` closes it.
 - `space` play and pause, `h` and `l` move a sentence back and forward,
   `k` and `j` change speed by 25 wpm, `r` reloads the clipboard, `0` restarts,
   `Esc` closes.
@@ -31,7 +36,8 @@ when the panel opens.
 From a keybinding:
 
 ```sh
-omarchy-shell sterre.speed-reader read      # open and start on the clipboard
+omarchy-shell sterre.speed-reader readnow   # open, load the clipboard and start
+omarchy-shell sterre.speed-reader read      # open and load, without starting
 omarchy-shell sterre.speed-reader play
 omarchy-shell sterre.speed-reader pause
 omarchy-shell sterre.speed-reader speed 600
@@ -41,7 +47,7 @@ omarchy-shell sterre.speed-reader status
 A good `~/.config/hypr/bindings.lua` entry:
 
 ```lua
-o.bind("SUPER + SHIFT + R", "Speed read clipboard", "omarchy-shell sterre.speed-reader read")
+o.bind("SUPER + SHIFT + R", "Speed read clipboard", "omarchy-shell sterre.speed-reader readnow")
 ```
 
 ## Settings
