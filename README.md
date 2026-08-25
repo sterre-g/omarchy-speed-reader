@@ -2,6 +2,8 @@
 
 Reads the clipboard to you one word at a time, in the bar.
 
+![The reader in the middle of the screen over a dimmed desktop, one word between two ticks](screenshot.png)
+
 Rapid serial visual presentation: instead of your eyes travelling along a line,
 the words come to a fixed point. Each word is pinned so that its optimal
 recognition point, roughly a third of the way in, sits on the same pixel every
