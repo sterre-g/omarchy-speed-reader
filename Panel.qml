@@ -255,13 +255,21 @@ Panel {
           id: display
           width: parent.width
           height: Math.round(root.wordSize * 2.2)
+          // A word wider than the space beside the pivot is cut at the card
+          // edge. Letting it push the row wider would move the pivot, which is
+          // the one thing in an RSVP reader that has to stay put.
+          clip: true
 
           readonly property string word: root.currentWord
           readonly property int orp: Model.orpIndex(display.word)
           readonly property string pre: display.word.substring(0, display.orp)
           readonly property string mid: display.word.substring(display.orp, display.orp + 1)
           readonly property string post: display.word.substring(display.orp + 1)
+          readonly property string previous: Model.wordAt(root.words, root.index - 1)
+          readonly property string next: Model.wordAt(root.words, root.index + 1)
           readonly property real pivot: Math.round(display.width * 0.42)
+          readonly property int neighbourSize: Math.round(root.wordSize * 0.55)
+          readonly property int neighbourGap: Math.round(root.wordSize * 0.5)
 
           Rectangle {
             x: display.pivot
@@ -290,6 +298,7 @@ Panel {
           }
 
           Text {
+            id: preText
             anchors.right: midText.left
             anchors.baseline: midText.baseline
             text: display.pre
@@ -299,12 +308,39 @@ Panel {
           }
 
           Text {
+            id: postText
             anchors.left: midText.right
             anchors.baseline: midText.baseline
             text: display.post
             font.family: root.fontFamily
             font.pixelSize: root.wordSize
             color: root.foreground
+          }
+
+          // The word either side, faded and smaller, so you can see where the
+          // sentence is going without looking away from the pivot. They hang
+          // off the ends of the focus word rather than sharing a row with it,
+          // so a long neighbour never shifts the letter you are fixed on.
+          Text {
+            anchors.right: preText.left
+            anchors.rightMargin: display.neighbourGap
+            anchors.baseline: midText.baseline
+            text: display.previous
+            font.family: root.fontFamily
+            font.pixelSize: display.neighbourSize
+            color: root.foreground
+            opacity: 0.3
+          }
+
+          Text {
+            anchors.left: postText.right
+            anchors.leftMargin: display.neighbourGap
+            anchors.baseline: midText.baseline
+            text: display.next
+            font.family: root.fontFamily
+            font.pixelSize: display.neighbourSize
+            color: root.foreground
+            opacity: 0.3
           }
         }
 

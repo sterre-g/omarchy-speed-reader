@@ -33,6 +33,16 @@ function orpIndex(word) {
   return Math.min(text.length - 1, lead + offset)
 }
 
+// The words either side of the focus word are drawn faded for context, so
+// asking for one off either end of the list has to be ordinary rather than an
+// error. The first word has no previous and the last has no next.
+function wordAt(words, index) {
+  var list = words || []
+  var i = Math.round(Number(index))
+  if (!isFinite(i) || i < 0 || i >= list.length) return ""
+  return String(list[i])
+}
+
 function dwellFactor(word) {
   var text = String(word || "")
   var core = text.replace(/[^0-9A-Za-z]/g, "")
@@ -114,6 +124,7 @@ if (typeof module !== "undefined" && module.exports) {
     clampWpm: clampWpm,
     tokenize: tokenize,
     orpIndex: orpIndex,
+    wordAt: wordAt,
     dwellFactor: dwellFactor,
     wordDelayMs: wordDelayMs,
     totalSeconds: totalSeconds,

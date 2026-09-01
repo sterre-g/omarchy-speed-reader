@@ -112,4 +112,15 @@ run("readouts describe position and time left", () => {
   assert.equal(M.remainingText(0, [], 600), "")
 })
 
+run("neighbouring words come back empty off either end", () => {
+  const words = M.tokenize("one two three")
+  assert.equal(M.wordAt(words, 0), "one")
+  assert.equal(M.wordAt(words, 2), "three")
+  assert.equal(M.wordAt(words, -1), "")
+  assert.equal(M.wordAt(words, 3), "")
+  assert.equal(M.wordAt([], 0), "")
+  assert.equal(M.wordAt(null, 0), "")
+  assert.equal(M.wordAt(words, "junk"), "")
+})
+
 process.stdout.write("\nall Model.js tests passed\n")

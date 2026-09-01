@@ -9,6 +9,11 @@ the words come to a fixed point. Each word is pinned so that its optimal
 recognition point, roughly a third of the way in, sits on the same pixel every
 time. That is the marked spot between the two ticks.
 
+The word before and the word after are drawn either side, faded and smaller, so
+you can see where the sentence is going without looking away from the marked
+spot. They hang off the ends of the focus word rather than sharing a row with
+it, so a long neighbour never shifts the letter you are fixed on.
+
 Long words, commas and full stops each get proportionally more time, so 500 wpm
 does not mean every word flashes for exactly 120 ms.
 
@@ -62,7 +67,7 @@ entry in `~/.config/omarchy/shell.json`. See `barWidget.schema` in
 
 [Model.js](Model.js) holds everything worth testing: tokenizing, the optimal
 recognition point per word, the per word dwell multipliers, sentence boundaries
-for jumping, and the readouts. [test/model.test.js](test/model.test.js) covers
+for jumping, the neighbouring words, and the readouts. [test/model.test.js](test/model.test.js) covers
 it with plain node assertions.
 
 [Panel.qml](Panel.qml) is the widget. It reads the clipboard with
