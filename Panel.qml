@@ -287,8 +287,15 @@ Panel {
             anchors.bottom: parent.bottom
           }
 
+          // Every Text in this panel is pinned to PlainText, not only the five
+          // that show clipboard words. The default is Text.AutoText, which
+          // sniffs the string and switches to rich text on anything that looks
+          // like markup, and an <img> pasted into the clipboard would then make
+          // the shell process fetch it. Pinning the whole file means a Text
+          // added later cannot reintroduce the hole by forgetting the line.
           Text {
             id: midText
+            textFormat: Text.PlainText
             x: display.pivot - width / 2
             anchors.verticalCenter: parent.verticalCenter
             text: display.mid
@@ -298,6 +305,7 @@ Panel {
           }
 
           Text {
+            textFormat: Text.PlainText
             id: preText
             anchors.right: midText.left
             anchors.baseline: midText.baseline
@@ -308,6 +316,7 @@ Panel {
           }
 
           Text {
+            textFormat: Text.PlainText
             id: postText
             anchors.left: midText.right
             anchors.baseline: midText.baseline
@@ -322,6 +331,7 @@ Panel {
           // off the ends of the focus word rather than sharing a row with it,
           // so a long neighbour never shifts the letter you are fixed on.
           Text {
+            textFormat: Text.PlainText
             anchors.right: preText.left
             anchors.rightMargin: display.neighbourGap
             anchors.baseline: midText.baseline
@@ -333,6 +343,7 @@ Panel {
           }
 
           Text {
+            textFormat: Text.PlainText
             anchors.left: postText.right
             anchors.leftMargin: display.neighbourGap
             anchors.baseline: midText.baseline
@@ -363,6 +374,7 @@ Panel {
           implicitHeight: Math.max(positionText.implicitHeight, remainingText.implicitHeight)
 
           Text {
+            textFormat: Text.PlainText
             id: positionText
             anchors.left: parent.left
             text: Model.positionText(root.index, root.words)
@@ -372,6 +384,7 @@ Panel {
           }
 
           Text {
+            textFormat: Text.PlainText
             id: remainingText
             anchors.right: parent.right
             text: Model.remainingText(root.index, root.words, root.wpm)
@@ -442,6 +455,7 @@ Panel {
             }
 
             Text {
+              textFormat: Text.PlainText
               anchors.verticalCenter: parent.verticalCenter
               text: root.wpm + " wpm"
               font.family: root.fontFamily
@@ -465,6 +479,7 @@ Panel {
         }
 
         Text {
+          textFormat: Text.PlainText
           width: parent.width
           text: root.sourceNote + "\nspace play, h l sentence, k j speed, r reload, 0 restart"
           font.family: root.fontFamily
