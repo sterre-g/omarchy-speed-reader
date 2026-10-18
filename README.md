@@ -74,8 +74,10 @@ it with plain node assertions.
 `wl-paste -n` through a Quickshell `Process`, and drives a `Timer` whose
 interval is recomputed per word.
 
-Only the widget on the focused monitor answers IPC, so `read` opens the reader
-on the screen you are looking at rather than on whichever monitor replied first.
+The widget exists once per monitor and an IPC target admits one handler, so
+[Service.qml](Service.qml) owns the target and hands each call to the widget on
+the focused monitor. `read` opens the reader on the screen you are looking at
+rather than on whichever monitor replied first.
 
 Text is never written anywhere. It is read from the clipboard into memory and
 dropped when you load something else.
@@ -88,6 +90,9 @@ dropped when you load something else.
 omarchy plugin validate ~/.config/omarchy/plugins/sterre.speed-reader
 omarchy-shell shell rescanPlugins
 ```
+
+Adding a new file to an installed plugin needs `omarchy restart shell`,
+otherwise Qt serves a cached directory listing.
 
 ## License
 

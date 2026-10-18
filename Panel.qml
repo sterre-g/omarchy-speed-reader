@@ -26,8 +26,11 @@ Panel {
     : 250
   readonly property bool atEnd: root.words.length > 0 && root.index >= root.words.length - 1
 
-  // Only the widget on the focused monitor answers IPC, so the reader opens
-  // where you are looking. The bar keeps one panel open shell wide anyway.
+  // An IPC target admits one handler and this widget exists once per monitor,
+  // so the target lives in Service.qml and sends each call to the widget on the
+  // focused monitor.
+  property var service: null
+
   readonly property string screenName: root.QsWindow.window && root.QsWindow.window.screen
     ? root.QsWindow.window.screen.name
     : ""
@@ -104,6 +107,33 @@ Panel {
     root.wpm = Model.clampWpm(next, 400)
   }
 
+  function readClipboard(playNow) {
+    root.playWhenLoaded = playNow === true
+    root.open()
+    root.loadClipboard()
+  }
+
+  function resolveService() {
+    if (root.service || !root.bar || !root.bar.shell) return
+    var found = typeof root.bar.shell.serviceFor === "function" ? root.bar.shell.serviceFor(root.moduleName) : null
+    if (!found) return
+    root.service = found
+    root.service.registerWidget(root)
+  }
+
+  onBarChanged: root.resolveService()
+  Component.onDestruction: if (root.service) root.service.unregisterWidget(root)
+
+  // The shell creates the service on its own schedule, so a widget built first
+  // has to look again rather than give up.
+  Timer {
+    interval: 250
+    repeat: true
+    running: root.service === null
+    triggeredOnStart: true
+    onTriggered: root.resolveService()
+  }
+
   onOpenedChanged: if (opened) {
     if (root.words.length === 0 && root.setting("autoLoad", true)) root.loadClipboard()
     Qt.callLater(function () { keyCatcher.forceActiveFocus() })
@@ -125,44 +155,6 @@ Panel {
     stdout: StdioCollector {
       waitForEnd: true
       onStreamFinished: root.loadText(text)
-    }
-  }
-
-  IpcHandler {
-    target: "sterre.speed-reader"
-    enabled: root.onFocusedScreen
-
-    function open(): void { root.open() }
-    function close(): void { root.close() }
-    function toggle(): void { root.toggle() }
-    function read(): string {
-      root.playWhenLoaded = false
-      root.open()
-      root.loadClipboard()
-      return "reading clipboard"
-    }
-    // One keybinding, from nothing to reading: open, take whatever is on the
-    // clipboard, and start.
-    function readnow(): string {
-      root.playWhenLoaded = true
-      root.open()
-      root.loadClipboard()
-      return "reading clipboard now"
-    }
-    function play(): string {
-      root.play()
-      return "playing"
-    }
-    function pause(): string {
-      root.pause()
-      return "paused"
-    }
-    function speed(value: string): string {
-      root.setWpm(Number(value))
-      return String(root.wpm) + " wpm"
-    }
-    function status(): string {
-      return Model.positionText(root.index, root.words) + ", " + root.wpm + " wpm"
     }
   }
 
